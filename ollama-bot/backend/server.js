@@ -81,13 +81,14 @@ Customer: ${message}
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: 'mistral',
+        model: 'deepseek-r1:1.5b', 
         prompt: fullPrompt,
         stream: false
       })
     });
 
     const data = await response.json();
+    console.log(data);
     res.json({ response: data.response.trim() });
   } catch (err) {
     console.error(err);
@@ -96,5 +97,5 @@ Customer: ${message}
 });
 
 app.listen(3000, () => {
-  console.log('✅ Savory Bites chatbot backend is running on http://localhost:3000');
+  console.log('✅ Savory Bites chatbot backend is running on http://localhost:3000 (using DeepSeek R1 1.5B)');
 });
