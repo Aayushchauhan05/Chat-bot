@@ -119,7 +119,8 @@
         });
 
         const data = await response.json();
-        appendMessage(data.response, 'bot');
+        const cleaned = cleanResponse(data.response);
+        appendMessage(cleaned, 'bot');
       } catch (err) {
         appendMessage("Sorry, I can't connect right now.", 'bot');
       }
@@ -132,6 +133,10 @@
       msgDiv.innerText = text;
       chatBox.appendChild(msgDiv);
       chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    function cleanResponse(response) {
+      return response.replace(/<think>[\s\S]*?<\/think>/gi, '').trim();
     }
   </script>
 </body>
