@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Tasty Bites Chatbot</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #fffaf0;
+      margin: 0;
+      padding: 0;
+    }
+
+    .chat-container {
+      max-width: 600px;
+      margin: 50px auto;
+      background: #fff;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    .chat-box {
+      height: 400px;
+      overflow-y: auto;
+      border: 1px solid #ddd;
+      padding: 10px;
+      border-radius: 8px;
+      background-color: #f9f9f9;
+    }
+
+    .chat-message {
+      margin: 10px 0;
+    }
+
+    .user {
+      text-align: right;
+      color: #007bff;
+    }
+
+    .bot {
+      text-align: left;
+      color: #333;
+    }
+
+    input[type="text"] {
+      width: 80%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      margin-top: 10px;
+    }
+
+    button {
+      padding: 10px 15px;
+      background: #ff6347;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #e5533d;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="chat-container">
+    <h2>🍽️ Tasty Bites - Chat Assistant</h2>
+    <div class="chat-box" id="chatBox"></div>
+    <input type="text" id="userInput" placeholder="Ask me something..." />
+    <button id="sendBtn">Send</button>
+  </div>
+
+  <script type="module">
+    import { GoogleGenerativeAI } from "https://esm.run/@google/generative-ai";
+
+    const genAI = new GoogleGenerativeAI("AIzaSyAQIBFs9iCCiJUJNzyg7xYPWWDGc0qHH0Q");
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
+    const restaurantContext = `
+You are a virtual assistant for "Tasty Bites," a cozy restaurant offering Italian, Indian, and Continental dishes. 
+You can take orders, provide menu details, suggest dishes, answer opening hours, and address customer queries politely.
+
+Menu Highlights:
+- Starters: Garlic Bread, Bruschetta, Paneer Tikka
+- Main Course: Margherita Pizza, Butter Chicken, Veg Lasagna
+- Desserts: Tiramisu, Gulab Jamun, Chocolate Brownie
+- Beverages: Fresh Lime Soda, Cappuccino, Iced Tea
+
+Timings: 10 AM - 11 PM
+Location: 123 Food Street, Delhi
+Contact: +91-9876543210
+`;
+
+    async function sendMessage() {
+      const input = document.getElementById("userInput");
+      const chatBox = document.getElementById("chatBox");
+      const message = input.value.trim();
+      if (!message) return;
+
+      
+      chatBox.innerHTML += `<div class="chat-message user"><strong>You:</strong> ${message}</div>`;
+      input.value = "";
+      chatBox.scrollTo({ top: chatBox.scrollHeight, behavior: "smooth" });
+
+      try {
+        const result = await model.generateContent(`${restaurantContext}\nCustomer: ${message}\nAssistant:`);
+        const response = result.response.text();
+        chatBox.innerHTML += `<div class="chat-message bot"><strong>Bot:</strong> ${response}</div>`;
+        chatBox.scrollTo({ top: chatBox.scrollHeight, behavior: "smooth" });
+      } catch (error) {
+        chatBox.innerHTML += `<div class="chat-message bot"><strong>Bot:</strong> Sorry, something went wrong!</div>`;
+        console.error("Error:", error);
+      }
+    }
+
+    
+    document.getElementById("sendBtn").addEventListener("click", sendMessage);
+
+    document.getElementById("userInput").addEventListener("keydown", (e) => {
+      if (e.key === "Enter") sendMessage();
+    });
+
+
+    window.sendMessage = sendMessage;
+  </script>
+
+</body>
+</html>
